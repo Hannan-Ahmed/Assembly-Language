@@ -1,0 +1,1533 @@
+message macro p1
+mov dx, offset p1
+mov ah,09
+int 21h
+endm
+
+
+.model small
+.stack 300h
+
+admin struct
+	empid db 100 dup('?')
+	empname db 100 dup('?')
+	empdepart db 100 dup('?')
+	
+admin ends
+
+.data
+
+incrementer   db 0 ;this is used for patients charges
+
+
+
+loopstr dw ?
+
+let db 49   ; counter for indexing patients names 
+let2 db 49   ; counter for indexing patients deseases 
+
+
+ot_msg1 db 10,13,"Enter the number of patients to be operated : $"
+ot_msg2 db 10,13,"Enter the desease of patient $" 
+ot_msg3 db 10,13,"Enter the name of patient $" 
+ot_msg4 db 10,13,"Name of patient $"
+ot_msg5 db 10,13,"Desease of patient $"  
+ot_name db 100 dup('?')
+ot_desease db 100 dup('?')
+charge db 10,13,"Patient Charges$"
+charges db 10,13,"The charges for pateinet $"
+charge1 db "5000$"
+charge2 db 2
+
+
+del_msg db 10,13,"Enter the sno for deleteing data $"
+
+
+
+ot_menu db 10,13,"1.ENTER OT DATA     2.PRINT OT DATA   3. DELETE OT DATA     9 Enter Patients$"
+ot_menu2 db 10,13,"4.Enter Admin Data   5.Print Admin Data  7.Add Admin Data  8. Search  6.Exit$ "  
+ot_menu3 db 10,13,"a.Employe Name   b.Employe ID  c.Employe Department$ "
+
+choice db 10,13,"Please Enter Your Choice $"
+
+head db 10,13,"             S A N     F R A N C I S C O     H O S P I  T A L $"
+newl DB 0AH,0DH,"$"       ;for new line
+
+
+
+
+
+;//////////////////////////////* ADMIN * ///////////////////////////
+
+addep admin<>
+
+counter dw ?
+loopstore dw ? 
+
+digitCount db 0  
+ anotherCounter db 0
+ enteredNumber dw 0
+ temp1 dw 0
+ temp2 db 0
+ inputStr db "Enter the number of Employes in Hospital : ","$"  
+
+  a_msg1 db "Enter the Name of Employe $"
+  a_msg2 db "Enter the ID of Employe $"
+  a_msg3 db "Enter the Department of Employe $"
+  a_msg4 db "Name of Employe $"
+  a_msg5 db "ID no of Employe $"
+  a_msg6 db "Department of Employe $"
+  a_choice db "Kindly enter your choice$"
+  a_search db 100 dup('?')
+  a_sname db "Enter the name to be found : $"
+  kamyabi db "Name found$"
+  fail db "Name does not found$"
+
+
+var1 db ?
+var2 db ?
+
+
+index db 0
+display db 48
+
+
+
+;///////////////////LOGIN//////////////
+
+
+password db '2','4','9','0'
+l_head db "                               L O G I N   $"
+l_msg1 db "Enter Password : $"
+l_msg2 db "Password did not Match.Sorry you are not allowed to use this System$.$"
+l_msg3 db "Password Matched. $"
+
+bye db 10,13,"GOOD BYE !$"
+
+
+entered db 100 dup(?)
+
+;/////////////JALBEEB CODE////////////////
+patient struct
+	nam db 10 dup  ('$')
+	disease db 5 dup ('$') 
+patient ends	
+.data
+name_prompt db 'Enter name: $'
+Disease db 'Enter Disease: $'
+choice_prompt db 'Do you want to add more patients (y/n): $'
+
+p1 patient 3 dup (<>)
+
+
+.code
+main proc
+
+
+
+
+
+mov ah,0
+mov al,2
+int 10h
+
+
+mov ah,07h
+mov al,0
+mov cx,0
+mov dh,80
+mov dl,80
+mov bh,00101110b
+int 10h
+
+
+
+mov ah,07h
+mov al,0
+mov cx,00
+mov dh,3
+mov dl,80
+mov bh,10101010b
+int 10h
+
+mov ax,@data
+mov ds,ax
+
+
+
+
+
+call newline
+call starics
+
+mov dx,offset l_head
+mov ah,9
+int 21h
+
+call newline
+call starics
+
+
+message l_msg1
+
+
+
+
+mov si,0
+login:
+
+mov ah,01
+int 21h
+cmp al,13
+je out1
+mov entered[si],al
+
+inc si
+jmp login
+
+
+
+out1:
+mov entered[si],'?'
+
+
+
+mov si,0
+compari:
+
+operating:
+mov al,entered[si]
+cmp password[si],al
+
+je got1
+
+
+call newline
+
+message l_msg2
+
+call newline
+
+jmp choice6
+
+got1:
+inc si
+cmp entered[si],'?'
+je result
+jmp operating
+
+result:
+message l_msg3
+
+
+call newline
+
+
+
+
+;**********************
+mov ah,0
+mov al,2
+int 10h
+
+
+
+mov ah,06h
+mov al,0
+mov cx,0
+mov dh,80
+mov dl,80
+mov bh,00101110b
+int 10h
+
+
+mov ah,06h
+mov al,0
+mov cx,00
+mov dh,3
+mov dl,80
+mov bh,10101010b
+int 10h
+
+
+call starics
+mov dx,offset head
+mov ah,9
+int 21h
+
+
+call newline
+call starics
+
+
+menu:
+
+
+mov dx,offset ot_menu
+mov ah,9
+int 21h
+
+
+
+call newline
+message ot_menu2
+
+
+call newline
+call line
+
+message choice
+
+
+mov ah,1
+int 21h
+cmp al,49
+je choice1
+cmp al,50
+je choice2
+cmp al,51
+je choice3
+cmp al,52
+je choice4
+cmp al,53
+je choice5
+cmp al,54
+je choice6
+cmp al,55
+je choice7
+cmp al,56
+je choice8
+cmp al,57
+je choice9
+
+
+choice1:
+
+call ot
+call line
+
+jmp menu
+
+choice2:
+call print_ot_data
+call newline
+call line
+
+jmp menu
+
+choice3:
+call del_ot_data
+call line
+jmp menu
+
+choice4:
+call newline
+call admindata
+call newline
+call line
+
+jmp menu
+
+choice5:
+
+
+call newline
+call line
+message ot_menu3
+
+call newline
+call line
+message a_choice
+
+
+mov  ah,1
+int 21h
+
+cmp al,'a'
+je choicea
+cmp al,'b'
+je choiceb
+cmp al,'c'
+je choicec
+
+
+choicea:
+call adminnames
+jmp going
+choiceb:
+call adminid
+jmp going
+choicec:
+call admindepart
+
+going:
+call line
+jmp menu
+
+
+choice7:
+call newline
+;passsing parameter as argument
+mov display,49
+call addadmindata
+
+jmp menu
+
+
+choice8:
+call newline
+call newline
+call searchname
+call newline
+call line
+jmp menu
+
+
+choice9:
+call newline
+call newline
+call patients
+call newline
+call line
+jmp menu
+
+
+
+choice6:
+exitprogram:
+
+
+message bye
+mov ah,4ch
+int 21h
+main endp
+
+
+newline proc
+message newl
+
+ret
+newline endp
+
+ot proc
+
+
+message ot_msg1
+
+
+mov ah,1
+int 21h
+sub al,48
+mov ah,00
+mov loopstr,ax
+mov cx,loopstr
+; new line
+call newline
+
+
+;mov si,0
+l3:
+
+
+mov si,0
+names:
+
+message ot_msg3
+
+
+mov dl,let
+mov ah,2
+int 21h
+mov dx,':'
+mov ah,2
+int 21h
+inc let
+
+label2:
+
+mov ah,01
+int 21h
+cmp al,13
+je exitL2
+mov ot_name[si],al
+
+inc si
+jmp label2
+
+
+
+exitL2:
+
+mov ot_name[si],'/'
+inc si
+loop names
+mov ot_name[si],'?'
+
+
+
+
+
+mov cx,loopstr
+mov si,0
+
+l1:
+
+
+
+message ot_msg2
+
+
+inc incrementer  ; we will use this forprinting charges
+
+
+
+mov dl,let2
+mov ah,2
+int 21h
+mov dx,':'
+mov ah,2
+int 21h
+inc let2
+
+label1:
+
+mov ah,01
+int 21h
+cmp al,13
+je exitL1
+mov ot_desease[si],al
+
+inc si
+jmp label1
+
+
+
+exitL1:
+
+mov ot_desease[si],'/'
+
+
+
+inc si
+
+loop l1
+
+mov ot_desease[si],'?'
+
+ret
+ot endp
+
+
+
+
+
+
+
+
+;///////////////////////////PRINT OT DATA ////////////////
+print_ot_data proc
+
+
+
+mov si,0
+mov let,49
+
+message ot_msg4
+
+call newline
+
+
+message ot_msg4
+
+
+mov dl,let
+mov ah,2
+int 21h
+inc let
+mov dl,':'
+mov ah,2
+int 21h
+
+
+ot_nam:
+
+
+
+cmp ot_name[si],'/'
+
+je exi
+
+cmp ot_name[si],'?'
+je stop
+
+
+
+
+
+mov dl,ot_name[si]
+mov ah,2
+int 21h
+
+
+
+inc si
+
+
+
+
+jmp ot_nam
+
+
+exi:
+call newline
+inc si
+
+cmp ot_name[si],'?'
+je stop
+
+
+message ot_msg4
+
+mov dl,let
+mov ah,2
+int 21h
+inc let
+mov dl,':'
+mov ah,2
+int 21h
+
+
+
+jmp ot_nam
+
+stop:
+
+
+mov si,0
+
+mov let,49
+
+message ot_msg5
+
+call newline
+
+
+message ot_msg5
+
+
+mov dl,let
+mov ah,2
+int 21h
+inc let
+mov dl,':'
+mov ah,2
+int 21h
+
+ot_label:
+
+
+
+cmp ot_desease[si],'/'
+je exi2
+
+cmp ot_desease[si],'?'
+je stop2
+
+
+mov dl,ot_desease[si]
+mov ah,2
+int 21h
+
+inc si
+
+
+
+
+jmp ot_label
+
+
+exi2:
+
+call newline
+inc si
+
+cmp ot_desease[si],'?'
+je stop2
+
+
+message ot_msg5
+
+mov dl,let
+mov ah,2
+int 21h
+inc let
+mov dl,':'
+mov ah,2
+int 21h
+
+
+
+jmp ot_label
+
+
+stop2:
+message charge
+
+
+
+mov al,incrementer
+mov ah,00
+mov cx,ax
+mov let,49
+price:
+message charges
+
+
+mov dl,let
+mov ah,2
+int 21h
+mov dl,':'
+mov ah,2
+int 21h
+inc let
+
+mov al,charge2
+mov bl,4
+mul bl
+mov dl,al
+
+add dl,48
+mov ah,2
+int 21h
+add charge2,3
+
+loop price
+
+stop3:
+
+ret
+print_ot_data endp
+
+
+;//////////////////delete function
+
+del_ot_data proc
+
+message del_msg
+
+
+
+
+mov ah,1
+int 21h
+sub al,49
+
+
+mov ah,00
+
+mov cx,ax
+
+mov si,0
+get:
+inc si
+find:
+
+cmp ot_name[si],'/'
+je stops
+
+inc si
+jmp find
+
+stops:
+loop get
+
+
+operation:
+
+mov ot_name[si],' '
+inc si
+cmp ot_name[si],'/'
+je stopit
+
+jmp operation
+
+stopit:
+
+mov ot_name[si],'/'
+inc si
+
+
+
+
+
+
+
+
+mov cx,ax
+
+mov si,0
+get2:
+inc si
+find2:
+
+cmp ot_desease[si],'/'
+je stops2
+
+inc si
+jmp find2
+
+stops2:
+loop get2
+
+
+operation2:
+
+mov ot_desease[si],' '
+inc si
+cmp ot_desease[si],'/'
+je stopit2
+
+jmp operation2
+
+stopit2:
+
+mov ot_desease[si],'/'
+inc si
+
+
+
+ret
+
+del_ot_data endp
+
+
+starics proc
+mov cx,40
+head2:
+mov dl,'*'
+mov ah,2
+int 21h
+
+mov dl,' '
+mov ah,2
+int 21h
+loop head2
+ret
+starics endp
+
+line proc
+mov cx,40
+head3:
+mov dl,'_'
+mov ah,2
+int 21h
+
+mov dl,' '
+mov ah,2
+int 21h
+loop head3
+ret
+line endp
+;**********************Admin
+admindata proc
+mov cx,0
+mov ah,09h
+ mov dx,offset inputStr
+ int 21h
+
+
+
+ input:
+ mov ah,01h
+ int 21h
+ cmp al,13 ;Stop taking input if user presses Enter key
+ je stopsIt
+ 
+ 
+ sub al,48
+ mov ah,0
+ mov temp1, ax   
+
+ mov ax,0
+ mov ax,enteredNumber
+ mov bl,10
+ mul bl
+ add ax,temp1
+ mov enteredNumber,ax
+ add cx,ax
+
+inc digitCount 
+ jmp input
+ 
+ stopsIt:
+ mov al,digitCount
+ mov anotherCounter,al
+ 
+
+
+ 
+
+ BreakIt:
+ cmp digitCount,0
+ je displayIt 
+ dec digitCount
+ 
+ mov ax, enteredNumber
+ mov bl,10
+ div bl   
+ mov dx,0 
+ mov dl,ah
+ push dx
+ 
+ mov ah,0
+ mov enteredNumber,ax
+  
+ jmp BreakIt
+ 
+ displayIt: 
+ cmp anotherCounter,0
+ je exit
+ dec anotherCounter 
+ pop dx
+ jmp displayIt
+ 
+
+ exit:
+
+mov let,49
+
+
+
+
+sub cx,1 
+
+mov loopstore,cx
+mov si,0
+loopname:
+call newline
+
+;*******************************
+
+
+message a_msg1
+
+
+cmp let,57
+ja prodisplay
+mov dl,let
+mov ah,2
+int 21h
+backtodis:
+mov dl,':'
+mov ah,2
+int 21h
+
+
+labell1:
+mov ah,01
+int 21h
+cmp al,13
+je exitL3
+mov addep.empname[si],al
+inc si
+inc index
+jmp labell1
+
+exitL3:
+
+
+
+
+mov addep.empname[si],'/'
+inc si;
+inc index
+inc let
+loop loopname
+mov addep.empname[si],'?'
+jmp next
+
+
+prodisplay:
+mov dl,49
+mov ah,2
+int 21h
+
+
+
+mov dl,display
+mov ah,2
+int 21h
+inc display
+
+
+jmp backtodis
+
+
+next:
+  
+;*******************************
+mov let,49
+mov display,48
+mov cx,loopstore
+mov si,0
+loopid:
+call newline
+
+
+
+message  a_msg2
+
+
+cmp let,57
+ja prodisplay2
+
+
+mov dl,let
+mov ah,2
+int 21h
+backtodis2:
+mov dl,':'
+mov ah,2
+int 21h
+
+
+
+labell2:
+mov ah,01
+int 21h
+cmp al,13
+je exitL4
+mov addep.empid[si],al
+inc si
+jmp labell2
+
+exitL4:
+
+mov addep.empid[si],'/'
+inc si;
+inc let
+
+loop loopid
+
+inc si
+mov addep.empid[si],'?'
+jmp next2
+
+mov display,49
+prodisplay2:
+mov dl,49
+mov ah,2
+int 21h
+
+
+
+mov dl,display
+mov ah,2
+int 21h
+inc display
+
+
+jmp backtodis2
+
+
+next2:
+  
+
+
+;*******************************
+mov display,48
+mov let,49
+mov cx,loopstore
+mov si,0
+loopdepart:
+call newline
+
+
+
+message  a_msg3
+
+cmp let,57
+ja prodisplay3
+
+mov dl,let
+mov ah,2
+int 21h
+backtodis3:
+mov dl,':'
+mov ah,2
+int 21h
+
+
+
+labell3:
+mov ah,01
+int 21h
+cmp al,13
+je exitL5
+mov addep.empdepart[si],al
+inc si
+jmp labell3
+
+exitL5:
+
+mov addep.empdepart[si],'/'
+inc si;
+inc let
+
+loop loopdepart
+inc si;
+mov addep.empdepart[si],'?'
+jmp next3
+
+
+
+prodisplay3:
+mov dl,49
+mov ah,2
+int 21h
+
+
+
+mov dl,display
+mov ah,2
+int 21h
+inc display
+
+
+jmp backtodis3
+
+
+
+next3:
+
+ret
+admindata endp
+;/////////////////////////
+
+addadmindata proc
+;mov display,49
+
+message  a_msg1
+
+cmp let,57
+ja prodisplay11
+
+mov dl,let
+mov ah,2
+int 21h
+backtodis11:
+mov dl,':'
+mov ah,2
+int 21h
+
+mov al,index
+mov ah,00
+mov si,ax
+llabell1:
+mov ah,01
+int 21h
+cmp al,13
+je exitLl3
+mov addep.empname[si],al
+inc si
+inc index
+jmp llabell1
+
+exitLl3:
+
+mov addep.empname[si],'/'
+inc si;
+inc index
+inc let
+
+mov addep.empname[si],'?'
+jmp last
+
+prodisplay11:
+mov dl,49
+mov ah,2
+int 21h
+
+
+
+mov dl,display
+mov ah,2
+int 21h
+inc display
+
+
+jmp backtodis11
+
+last:
+
+
+
+ret
+addadmindata endp
+;************************
+adminnames proc
+call newline
+mov si,0
+mov let,49
+mov display,48
+message  a_msg4
+
+call newline
+
+message a_msg4
+
+
+
+
+mov dl,let
+mov ah,2
+int 21h
+inc let
+backtodis8:
+mov dl,':'
+mov ah,2
+int 21h
+
+admi_nam8:
+cmp addep.empname[si],'/'
+je exiit8
+
+cmp addep.empname[si],'?'
+je stop8
+
+mov dl,addep.empname[si]
+mov ah,2
+int 21h
+
+inc si
+
+jmp admi_nam8
+
+exiit8:
+call newline
+inc si
+
+cmp addep.empname[si],'?'
+je stop8
+
+message a_msg4
+
+
+cmp let,57
+ja prodisplay8
+
+mov dl,let
+mov ah,2
+int 21h
+inc let
+mov dl,':'
+mov ah,2
+int 21h
+
+jmp admi_nam8
+
+jmp next8
+
+
+
+prodisplay8:
+mov dl,49
+mov ah,2
+int 21h
+
+
+
+mov dl,display
+mov ah,2
+int 21h
+inc display
+
+
+jmp backtodis8
+
+next8:
+stop8:
+ret
+adminnames endp
+;////////////////////////////
+adminid proc
+call newline
+mov si,0
+mov let,49
+mov display,48
+message a_msg5
+
+call newline
+message a_msg5
+
+
+
+
+mov dl,let
+mov ah,2
+int 21h
+inc let
+backtodis9:
+mov dl,':'
+mov ah,2
+int 21h
+
+admi_nam9:
+cmp addep.empid[si],'/'
+je exiit9
+
+cmp addep.empid[si],'?'
+je stop9
+
+mov dl,addep.empid[si]
+mov ah,2
+int 21h
+
+inc si
+
+jmp admi_nam9
+
+exiit9:
+call newline
+inc si
+
+cmp addep.empid[si],'?'
+je stop9
+
+message a_msg5
+
+cmp let,57
+ja prodisplay9
+
+mov dl,let
+mov ah,2
+int 21h
+inc let
+mov dl,':'
+mov ah,2
+int 21h
+
+jmp admi_nam9
+
+jmp next9
+
+
+
+prodisplay9:
+mov dl,49
+mov ah,2
+int 21h
+
+
+
+mov dl,display
+mov ah,2
+int 21h
+inc display
+
+
+jmp backtodis9
+
+next9:
+stop9:
+ret
+adminid endp
+admindepart proc
+call newline
+mov si,0
+mov let,49
+mov display,48
+message a_msg6
+
+call newline
+
+message a_msg6
+
+
+
+
+mov dl,let
+mov ah,2
+int 21h
+inc let
+backtodis6:
+mov dl,':'
+mov ah,2
+int 21h
+
+admi_nam6:
+cmp addep.empdepart[si],'/'
+je exiit6
+
+cmp addep.empdepart[si],'?'
+je stopp6
+
+mov dl,addep.empdepart[si]
+mov ah,2
+int 21h
+
+inc si
+
+jmp admi_nam6
+
+exiit6:
+call newline
+inc si
+
+cmp addep.empdepart[si],'?'
+je stopp6
+
+message a_msg6
+
+cmp let,57
+ja prodisplay6
+
+mov dl,let
+mov ah,2
+int 21h
+inc let
+mov dl,':'
+mov ah,2
+int 21h
+
+jmp admi_nam6
+
+jmp next6
+
+
+
+prodisplay6:
+mov dl,49
+mov ah,2
+int 21h
+
+
+
+mov dl,display
+mov ah,2
+int 21h
+inc display
+
+
+jmp backtodis6
+
+next6:
+stopp6:
+ret
+admindepart endp
+;***************************
+searchname proc
+
+
+
+mov dx,offset a_sname
+mov ah,9
+int 21h
+
+mov si,0
+labelname:
+
+mov ah,01
+int 21h
+cmp al,13
+je exitLs
+mov a_search[si],al
+
+inc si
+jmp labelname
+
+
+
+exitLs:
+mov a_search[si],'?'
+
+
+
+mov si,0
+mov di,0
+operationn:
+
+operate:
+mov al,a_search[si]
+cmp addep.empname[si],al
+
+je gotit
+
+
+
+
+message fail
+
+jmp finish
+
+gotit:
+inc si
+cmp a_search[si],'?'
+je pass
+jmp operate
+
+pass:
+message kamyabi
+
+jmp finish
+
+
+finish:
+
+ret
+searchname endp
+
+patients proc
+
+mov si, 0
+mov di, 0
+new:
+	mov dx, 10
+	mov ah, 2
+	int 21h
+	lea dx, name_prompt
+	mov ah, 9
+	int 21h
+	l2:
+		mov ah, 1
+		int 21h
+		cmp al, 13
+		je e; enter age
+		mov (patient PTR p1[di]).nam,al; 
+		inc di
+		jmp l2
+	e:
+		
+		mov di, si
+		lea dx, Disease
+		mov ah, 9
+		int 21h
+
+	l3:
+		mov ah, 1
+		int 21h
+		cmp al, 13
+		je here
+		mov (patient PTR p1[di]).disease, al
+		inc di
+		jmp l3
+		here:
+		add si, TYPE patient		
+		lea dx, choice_prompt
+		mov ah, 9
+		int 21h
+		mov ah, 1
+		int 21h
+		cmp al, 'y'
+		je new
+		cmp al, 'Y'
+		je new 
+		jmp exit
+		
+		exit:
+ret
+patients endp
+
+
+
+end main
